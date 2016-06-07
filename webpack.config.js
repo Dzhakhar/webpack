@@ -1,25 +1,17 @@
-var ExtractTextPlugin = require("extract-text-webpack-plugin")
-var path = require('path')
+var debug = process.env.NODE_ENV !== "production";
+var webpack = require('webpack');
 
 module.exports = {
-  entry: {
-    app: ['.src/index'] 
-  },
-  module: {
-    loaders: [
-      {
-        test: /\.scss$/,
-        exclude: /node_modules/,
-        loaders: ["style", "css", "sass"]
-      }, 
-    ] 
-  },
+  context: __dirname,
+  devtool: debug ? "inline-sourcemap" : null,
+  entry: "./js/scripts.js",
   output: {
-    filename: '[name].js',
-    path: path.join(__dirname, './build'),
-    publicPath: '/build'
+    path: __dirname + "/js",
+    filename: "scripts.min.js"
   },
-  plugins: [
-    new ExtractTextPlugin('[name].css') 
-  ]
-}
+  plugins: debug ? [] : [
+    new webpack.optimize.DedupePlugin(),
+    new webpack.optimize.OccurenceOrderPlugin(),
+    new webpack.optimize.UglifyJsPlugin({ mangle: false, sourcemap: false }),
+  ],
+};
